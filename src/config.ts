@@ -1,9 +1,6 @@
+require('dotenv').config();
+
 export const config = {
-    db: {
-        host: process.env.DB_SERVER || 'localhost',
-        name: process.env.DB_NAME || 'blue-stream-streamer',
-        port: 27017,
-    },
     logger: {
         durable: false,
         exchangeType: process.env.RMQ_LOGGER_TYPE || 'topic',
@@ -14,18 +11,20 @@ export const config = {
         username: process.env.RMQ_LOGGER_USER || 'guest',
         persistent: false,
     },
-    rabbitMQ: {
-        host: process.env.RMQ_HOST || 'localhost',
-        port: +(process.env.RMQ_PORT || 5672),
-        password: process.env.RMQ_PASSWORD || 'guest',
-        username: process.env.RMQ_USERNAME || 'guest',
-    },
     server: {
         port: 3000,
         name: 'streamer',
     },
     authentication: {
-        required: true,
+        required: false, // TODO: Change to true!
         secret: process.env.SECRET_KEY || 'bLue5tream@2018', // Don't use static value in production! remove from source control!
+    },
+    s3: {
+        region: process.env.S3_REGION || '',
+        bucket: process.env.S3_BUCKET || '',
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        signatureVersion: process.env.S3_VERSION || 'v4',
+        endpoint: process.env.S3_ENDPOINT || '',
     },
 };
