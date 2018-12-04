@@ -21,7 +21,7 @@ export class Server {
         this.app = express();
         this.configureMiddlewares();
         this.app.use(AppRouter);
-        
+
         this.initializeErrorHandler();
         this.server = http.createServer(this.app);
         this.server.listen(config.server.port, () => {
@@ -39,17 +39,15 @@ export class Server {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
 
-        
         if (config.authentication.required) {
             this.app.use(Authenticator.initialize());
             this.app.use(Authenticator.middleware);
         }
-        }
-    
+    }
 
     private initializeErrorHandler() {
         this.app.use(userErrorHandler);
         this.app.use(serverErrorHandler);
         this.app.use(unknownErrorHandler);
     }
-    }
+}
