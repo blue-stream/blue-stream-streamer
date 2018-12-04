@@ -1,73 +1,133 @@
-import * as request from 'supertest';
 import { expect } from 'chai';
-import * as mongoose from 'mongoose';
-
-import { IStreamer } from './streamer.interface';
-import { Server } from '../server';
-import { PropertyInvalidError, IdInvalidError, StreamerNotFoundError } from '../utils/errors/userErrors';
-import { config } from '../config';
-import { StreamerManager } from './streamer.manager';
 import { sign } from 'jsonwebtoken';
+import * as request from 'supertest';
+import { config } from '../config';
+import { Server } from '../server';
+import { uploadFile, deleteFile, listFiles } from '../utils/s3';
 
-describe('Streamer Module', function () {
+describe('Streamer Module', () => {
     let server: Server;
-    const validProppertyString: string = '12345';
-    const streamer: IStreamer = {
-        property: validProppertyString,
-    };
-    const authorizationHeader = `Bearer ${sign('mock-user', config.authentication.secret)}`;
-    const invalidId: string = '1';
-    const invalidProppertyString: string = '123456789123456789';
-    const invalidStreamer: IStreamer = {
-        property: invalidProppertyString,
-    };
-    before(async function () {
+
+    before(async () => {
+        await uploadFile('./src/test-files/moov2.mp4', 'moov2.mp4', 'video/mp4');
+        await uploadFile('./src/test-files/text.txt', 'text.txt');
         server = Server.bootstrap();
     });
 
-    describe('#POST /api/streamer/', function () {
-        context('When request is valid', function () {
-            it('Should return created streamer', function (done: MochaDone) {
-                request(server.app)
-                    .post('/api/streamer/')
-                    .send({ streamer })
-                    
-                    .set({ authorization: authorizationHeader })
-                    .expect(200)
-                    .expect('Content-Type', /json/)
-                    .end((error: Error, res: request.Response) => {
-                        expect(error).to.not.exist;
-                        expect(res).to.exist;
-                        expect(res.status).to.equal(200);
-                        expect(res).to.have.property('body');
-                        expect(res.body).to.be.an('object');
-                        expect(res.body).to.have.property('property', validProppertyString);
+    after(async () => {
+        // await deleteFile('video.mp4');
+        // await deleteFile('text.txt');
+    });
 
-                        done();
-                    });
+    describe('Stream video', () => {
+        context('Valid requests', () => {
+            it('Should return the whole video file (for downloading)', async () => {
+                await request(server.app)
+                    .get('/api/streamer/video/video.mp4')
+                    .expect('Content-Type', 'video/mp4')
+                    .expect('Content-Length', '1285179')
+                    .expect(200);
+            });
+
+            it('Should stream first chunk of video', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=0-500000')
+                    .expect('Content-Type', 'video/mp4')
+                    .expect('Content-Length', '500001')
+                    .expect('content-range', 'bytes 0-500000/1285179')
+                    .expect(206);
+            });
+
+            it('Should stream middle chunk of video', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=500000-1000000')
+                    .expect('Content-Type', 'video/mp4')
+                    .expect('Content-Length', '500001')
+                    .expect('content-range', 'bytes 500000-1000000/1285179')
+                    .expect(206);
+            });
+
+            it('Should stream last chunk of video', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=1000000-1285179')
+                    .expect('Content-Type', 'video/mp4')
+                    .expect('Content-Length', '285180')
+                    .expect('content-range', 'bytes 1000000-1285179/1285179')
+                    .expect(206);
+            });
+
+            it('Should stream multiple chunks of video', async () => {
+                const NUM_OF_CHUNKS = 6;
+                const CHUNK_PIECE = Math.floor(1285179 / NUM_OF_CHUNKS);
+
+                for (let i = 1; i <= NUM_OF_CHUNKS; i++) {
+                    const START = (i - 1) * CHUNK_PIECE;
+                    const END = i * CHUNK_PIECE;
+
+                    await request(server.app)
+                        .get('/video/video.mp4')
+                        .set('Accept', '*/*')
+                        .set('Range', `bytes=${START}-${END}`)
+                        .expect('Content-Type', 'video/mp4')
+                        .expect('Content-Length', `${END - START + 1}`)
+                        .expect('content-range', `bytes ${START}-${END}/1285179`)
+                        .expect(206);
+                }
             });
         });
 
-        context('When request is invalid', function () {
-            it('Should return error status when property is invalid', function (done: MochaDone) {
-                request(server.app)
-                    .post('/api/streamer/')
-                    .send({ streamer: invalidStreamer })
-                    
-                    .set({ authorization: authorizationHeader })
-                    .expect(400)
-                    .expect('Content-Type', /json/)
-                    .end((error: Error, res: request.Response) => {
-                        expect(error).to.not.exist;
-                        expect(res.status).to.equal(400);
-                        expect(res).to.have.property('body');
-                        expect(res.body).to.be.an('object');
-                        expect(res.body).to.have.property('type', PropertyInvalidError.name);
-                        expect(res.body).to.have.property('message', new PropertyInvalidError().message);
+        context('Bad requests', () => {
+            it('Should not stream chunk of video from negative range', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=-100000-200000')
+                    .expect(400);
+            });
 
-                        done();
-                    });
+            it('Should not stream chunk of video end before start', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=100000-10000')
+                    .expect(400);
+            });
+
+            it('Should not stream chunk of video end equals start', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=100000-100000')
+                    .expect(400);
+            });
+
+            it('Should not stream chunk of video end after max video size', async () => {
+                await request(server.app)
+                    .get('/video/video.mp4')
+                    .set('Accept', '*/*')
+                    .set('Range', 'bytes=100000-2000000')
+                    .expect(400);
+            });
+
+            it('Should not stream a non video file', async () => {
+                await request(server.app)
+                    .get('/video/text.txt')
+                    .expect(400);
+            });
+        });
+
+        context('Not found video', () => {
+            it('Should not stream not found video file', async () => {
+                await request(server.app)
+                    .get('/video/notExistsVideo.mp4')
+                    .expect(404);
             });
         });
     });
-    });
+});
