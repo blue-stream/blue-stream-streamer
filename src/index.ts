@@ -1,5 +1,3 @@
-import * as mongoose from 'mongoose';
-import * as rabbit from './utils/rabbit';
 import { Server } from './server';
 import { Logger } from './utils/logger';
 import { config } from './config';
@@ -25,10 +23,10 @@ process.on('SIGINT', async () => {
 });
 
 (async () => {
-    
     Logger.configure();
     Logger.log(syslogSeverityLevels.Informational, 'Server Started', `Port: ${config.server.port}`);
     console.log('Starting server');
+
     const server: Server = Server.bootstrap();
 
     server.app.on('close', () => {
