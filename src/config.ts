@@ -27,4 +27,7 @@ export const config = {
         signatureVersion: process.env.S3_VERSION || 'v4',
         endpoint: process.env.S3_ENDPOINT || '',
     },
+    streamer: {
+        maxChunkSize: 1024 * 128 // 128Kb
+    }
 };
