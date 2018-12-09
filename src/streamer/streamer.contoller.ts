@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { StreamerManager } from './streamer.manager';
 import { config } from '../config';
+import { getObjectContentLength, getObjectStream } from '../utils/s3';
 
 export class StreamerController {
 
@@ -9,7 +9,7 @@ export class StreamerController {
         let contentLength = 0;
 
         try {
-            contentLength = await StreamerManager.getObjectContentLength(path);
+            contentLength = await getObjectContentLength(path);
         } catch (err) {
             return res.sendStatus(404).send();
         }
@@ -24,8 +24,7 @@ export class StreamerController {
             });
 
             if (end <= start || end > contentLength) {
-                res.sendStatus(416).send();
-                return;
+                return res.sendStatus(416).send();
             }
 
             let chunkSize = (end - start) + 1;
@@ -42,16 +41,17 @@ export class StreamerController {
                 'Accept-Ranges': 'bytes',
                 'Content-Length': chunkSize,
                 'Content-Type': 'video/mp4',
+                'Transfer-Encoding': 'chunked'
             });
 
-            return StreamerManager.getObjectStream(path, `bytes=${start}-${end}`).pipe(res);
+            return getObjectStream(path, `bytes=${start}-${end}`).pipe(res);
         } else {
             res.writeHead(200, {
                 'Content-Length': contentLength,
                 'Content-Type': 'video/mp4',
             });
 
-            return StreamerManager.getObjectStream(path).pipe(res);
+            return getObjectStream(path).pipe(res);
         }
     }
 }
