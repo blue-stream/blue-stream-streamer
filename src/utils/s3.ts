@@ -36,3 +36,21 @@ export function listFiles(videoName?: string) {
         S3Instance.listObjectsV2({ Bucket: bucket }, (err, data) => err ? console.log(err) : console.log(data));
     }
 }
+
+export async function getObjectContentLength(path: string): Promise<number> {
+    const result = await S3Instance.headObject({ Bucket: config.s3.bucket, Key: path }).promise();
+    return result.ContentLength!;
+}
+
+export function getObjectStream(path: string, range?: string) {
+    const params: aws.S3.GetObjectRequest = {
+        Key: path,
+        Bucket: config.s3.bucket
+    };
+
+    if (range) params.Range = range;
+
+    return S3Instance
+        .getObject(params)
+        .createReadStream();
+}
