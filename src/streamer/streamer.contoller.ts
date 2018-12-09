@@ -30,9 +30,9 @@ export class StreamerController {
             let chunkSize = (end - start) + 1;
 
             if (chunkSize > config.streamer.maxChunkSize) {
-                end = start + config.streamer.maxChunkSize - 1;
+                end = start + config.streamer.maxChunkSize;
                 end = Math.min(end, contentLength - 1);
-                chunkSize = config.streamer.maxChunkSize;
+                chunkSize = config.streamer.maxChunkSize + 1;
             }
 
             console.log(`bytes ${start}-${end}/${contentLength}`);
