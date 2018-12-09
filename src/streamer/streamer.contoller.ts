@@ -41,7 +41,6 @@ export class StreamerController {
                 'Accept-Ranges': 'bytes',
                 'Content-Length': chunkSize,
                 'Content-Type': 'video/mp4',
-                'Transfer-Encoding': 'chunked'
             });
 
             return getObjectStream(path, `bytes=${start}-${end}`).pipe(res);
