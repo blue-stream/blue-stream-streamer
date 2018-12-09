@@ -28,6 +28,6 @@ export const config = {
         endpoint: process.env.S3_ENDPOINT || '',
     },
     streamer: {
-        maxChunkSize: 1024 * 128 // 128Kb
+        maxChunkSize: 1024 * 1024 // 1Mb
     }
 };
