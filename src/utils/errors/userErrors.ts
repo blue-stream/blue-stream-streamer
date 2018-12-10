@@ -8,7 +8,7 @@ export class PathInvalidError extends UserError {
 
 export class RangeHeaderInvalidError extends UserError {
     constructor() {
-        super('Range header is not in the correct format', 400);
+        super('Range header is not in the correct format', 416);
     }
 }
 
