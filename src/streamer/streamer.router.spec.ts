@@ -14,7 +14,6 @@ describe('Streamer Module', () => {
     let videoFileSize: number;
     const authorizationHeader = `Bearer ${sign({ id: 'user@domain' }, config.authentication.secret)}`;
 
-
     before(async () => {
         await uploadFile(`${testFilesPath}/video.mp4`, 'video.mp4', 'video/mp4');
         await uploadFile(`${testFilesPath}/text.txt`, 'text.txt');
@@ -102,7 +101,7 @@ describe('Streamer Module', () => {
                     .get(`${apiEndpoint}/video.mp4`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
-                    .set('Range', `bytes=500-724`)
+                    .set('Range', 'bytes=500-724')
                     .expect('Content-Type', 'video/mp4')
                     .expect('Content-Length', '225')
                     .expect('content-range', `bytes 500-724/${videoFileSize}`)
