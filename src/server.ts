@@ -47,7 +47,7 @@ export class Server {
 
             return next();
         });
-        
+
         if (process.env.NODE_ENV === 'development') {
             this.app.use(morgan('dev'));
         }
