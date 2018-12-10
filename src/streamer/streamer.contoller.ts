@@ -35,7 +35,6 @@ export class StreamerController {
                 chunkSize = config.streamer.maxChunkSize + 1;
             }
 
-            console.log(`bytes ${start}-${end}/${contentLength}`);
             res.writeHead(206, {
                 'Content-Range': `bytes ${start}-${end}/${contentLength}`,
                 'Accept-Ranges': 'bytes',
