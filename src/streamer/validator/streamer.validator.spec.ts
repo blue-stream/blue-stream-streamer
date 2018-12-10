@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { StreamerValidator } from './streamer.validator';
-import { ValidRequestMocks, responseMock } from './streamer.mocks';
 import { PathInvalidError, RangeHeaderInvalidError } from '../../utils/errors/userErrors';
 
 describe('Streamer Validator Middleware', function () {
@@ -28,12 +27,12 @@ describe('Streamer Validator Middleware', function () {
             expect(StreamerValidator.validateRangeHeader('bytes=100-')).to.be.undefined;
         });
         it('Should return RangeHeaderInvalidError when range header does not contain `start` property', function () {
-            const err = StreamerValidator.validateRangeHeader('bytes=-100')
+            const err = StreamerValidator.validateRangeHeader('bytes=-100');
             expect(err).to.be.instanceOf(RangeHeaderInvalidError);
         });
         it('Should return RangeHeaderInvalidError when range header is not in a bytes format', function () {
-            const err = StreamerValidator.validateRangeHeader('test=0-100')
+            const err = StreamerValidator.validateRangeHeader('test=0-100');
             expect(err).to.be.instanceOf(RangeHeaderInvalidError);
         });
-    })
+    });
 });
