@@ -16,8 +16,11 @@ export const config = {
         name: 'streamer',
     },
     authentication: {
-        required: false, // TODO: Change to true!
+        required: true,
         secret: process.env.SECRET_KEY || 'bLue5tream@2018', // Don't use static value in production! remove from source control!
+    },
+    cors: {
+        allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:4200'],
     },
     s3: {
         region: process.env.S3_REGION || '',
