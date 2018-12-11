@@ -5,6 +5,8 @@ import { Wrapper } from '../utils/wrapper';
 
 const StreamerRouter: Router = Router();
 
-StreamerRouter.post('/', StreamerValidator.canCreate, Wrapper.wrapAsync(StreamerController.create));
+StreamerRouter.get('/video/:path', StreamerValidator.canStreamVideo, Wrapper.wrapAsync(StreamerController.stream));
+// StreamerRouter.get('/thumbnail/:fileName', StreamerValidator.canStreamThumbnail, Wrapper.wrapAsync(StreamerController.create));
+// StreamerRouter.get('/preview/:fileName', StreamerValidator.canStreamPreview, Wrapper.wrapAsync(StreamerController.create));
 
 export { StreamerRouter };

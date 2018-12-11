@@ -1,11 +1,11 @@
-import { Types } from 'mongoose';
-
 export class StreamerValidatons {
-    static isPropertyValid(property: string): boolean {
-        return (!!property && property.length < 10);
+    static isPathValid(path: string): boolean {
+        const mp4ExtensionRegex = /.*\.mp4$/i;
+        return (!!path && path.length < 1024 && mp4ExtensionRegex.test(path));
     }
 
-    static isIdValid(id: string): boolean {
-        return (!!id && Types.ObjectId.isValid(id));
+    static isRangeHeaderValid(range: string): boolean {
+        const rangeRegex = new RegExp(/^bytes\=\d+\-(\d+)??$/);
+        return rangeRegex.test(range);
     }
 }

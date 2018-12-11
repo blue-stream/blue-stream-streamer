@@ -1,19 +1,19 @@
 import { UserError } from './applicationError';
 
-export class PropertyInvalidError extends UserError {
+export class PathInvalidError extends UserError {
     constructor(message?: string) {
-        super(message || `Property is invalid`, 400);
+        super(message || 'Path is invalid', 400);
     }
 }
 
-export class IdInvalidError extends UserError {
-    constructor(message?: string) {
-        super(message || `Id is invalid`, 400);
+export class RangeHeaderInvalidError extends UserError {
+    constructor() {
+        super('Range header is not in the correct format', 416);
     }
 }
 
-export class StreamerNotFoundError extends UserError {
+export class ResourceNotFoundError extends UserError {
     constructor(message?: string) {
-        super(message || `Streamer not found`, 404);
+        super(message || 'Resource not found', 404);
     }
 }
