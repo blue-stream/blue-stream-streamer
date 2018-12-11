@@ -45,7 +45,7 @@ export async function getObjectContentLength(path: string): Promise<number> {
 export function getObjectStream(path: string, range?: string) {
     const params: aws.S3.GetObjectRequest = {
         Key: path,
-        Bucket: config.s3.bucket
+        Bucket: config.s3.bucket,
     };
 
     if (range) params.Range = range;
