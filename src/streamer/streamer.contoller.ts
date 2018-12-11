@@ -52,4 +52,14 @@ export class StreamerController {
             return getObjectStream(path).pipe(res);
         }
     }
+
+    static async getSource(req: Request, res: Response) {
+        const path = req.params.path;
+
+        try {
+            return getObjectStream(path).pipe(res);
+        } catch (err) {
+            return res.sendStatus(404).send();
+        }
+    }
 }
