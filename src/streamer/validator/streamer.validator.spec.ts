@@ -1,21 +1,22 @@
 import { expect } from 'chai';
 import { StreamerValidator } from './streamer.validator';
 import { PathInvalidError, RangeHeaderInvalidError } from '../../utils/errors/userErrors';
+import { config } from '../../config';
 
 describe('Streamer Validator Middleware', function () {
 
     describe('#validatePath', function () {
         it('Should return undefined when path is valid', function () {
-            expect(StreamerValidator.validatePath('video.mp4')).to.be.undefined;
+            expect(StreamerValidator.validatePath('video.mp4', config.sourceType.video)).to.be.undefined;
         });
         it('Should return PathInvalidError when path is too long', function () {
-            expect(StreamerValidator.validatePath('a'.repeat(1025))).to.be.instanceOf(PathInvalidError);
+            expect(StreamerValidator.validatePath('a'.repeat(1025), config.sourceType.video)).to.be.instanceOf(PathInvalidError);
         });
         it('Should return PathInvalidError when path doesn\'t have mp4 extension', function () {
-            expect(StreamerValidator.validatePath('video.avi')).to.be.instanceOf(PathInvalidError);
+            expect(StreamerValidator.validatePath('video.avi', config.sourceType.video)).to.be.instanceOf(PathInvalidError);
         });
         it('Should return PathInvalidError when path doesn\'t have any extension', function () {
-            expect(StreamerValidator.validatePath('video')).to.be.instanceOf(PathInvalidError);
+            expect(StreamerValidator.validatePath('video', config.sourceType.video)).to.be.instanceOf(PathInvalidError);
         });
     });
 
