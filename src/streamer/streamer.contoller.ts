@@ -57,9 +57,11 @@ export class StreamerController {
         const path = req.params.path;
 
         try {
-            return getObjectStream(path).pipe(res);
+            await getObjectContentLength(path);
         } catch (err) {
             return res.sendStatus(404).send();
         }
+
+        return getObjectStream(path).pipe(res);
     }
 }
