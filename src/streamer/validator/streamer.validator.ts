@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StreamerValidatons } from './streamer.validations';
 import { PathInvalidError, RangeHeaderInvalidError } from '../../utils/errors/userErrors';
-import { EndpointType } from '../endPoint.type';
 import { config } from '../../config';
 
 export class StreamerValidator {
