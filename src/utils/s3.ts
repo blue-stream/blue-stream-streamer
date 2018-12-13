@@ -9,6 +9,7 @@ export const S3Instance: aws.S3 = new aws.S3({
     signatureVersion: config.s3.signatureVersion,
     endpoint: config.s3.endpoint,
     s3ForcePathStyle: true,
+    sslEnabled: false,
 });
 
 const bucket: string = config.s3.bucket;
