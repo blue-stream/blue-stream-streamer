@@ -5,9 +5,16 @@ import { config } from '../config';
 import { Server } from '../server';
 import { deleteFile, uploadFile } from '../utils/s3';
 
-const apiEndpoint = '/api/streamer/video';
+const streamerApiEndpoint = '/api/streamer/';
+const apiVideoEndpoint = `${streamerApiEndpoint}/video`;
+const apiThumbnailEndpoint = `${streamerApiEndpoint}/thumbnail`;
+const apiPreviewEndpoint = `${streamerApiEndpoint}/preview`;
 const testFilesPath = './src/test-files';
 const { maxChunkSize } = config.streamer;
+const testVideoFilename = 'video.mp4';
+const testPreviewFilename = 'preview.gif';
+const testThumbnailFilename = 'thumbnail.png';
+const testTextFilename = 'text.txt';
 
 describe('Streamer Module', () => {
     let server: Server;
@@ -15,24 +22,28 @@ describe('Streamer Module', () => {
     const authorizationHeader = `Bearer ${sign({ id: 'user@domain' }, config.authentication.secret)}`;
 
     before(async () => {
-        await uploadFile(`${testFilesPath}/video.mp4`, 'video.mp4', 'video/mp4');
-        await uploadFile(`${testFilesPath}/text.txt`, 'text.txt');
+        await uploadFile(`${testFilesPath}/${testVideoFilename}`, testVideoFilename, 'video/mp4');
+        await uploadFile(`${testFilesPath}/${testTextFilename}`, testTextFilename);
+        await uploadFile(`${testFilesPath}/${testThumbnailFilename}`, testThumbnailFilename, 'image/png');
+        await uploadFile(`${testFilesPath}/${testPreviewFilename}`, testPreviewFilename);
 
-        videoFileSize = fs.statSync(`${testFilesPath}/video.mp4`).size;
+        videoFileSize = fs.statSync(`${testFilesPath}/${testVideoFilename}`).size;
 
         server = Server.bootstrap();
     });
 
     after(async () => {
-        await deleteFile('video.mp4');
-        await deleteFile('text.txt');
+        await deleteFile(testVideoFilename);
+        await deleteFile(testTextFilename);
+        await deleteFile(testThumbnailFilename);
+        await deleteFile(testPreviewFilename);
     });
 
     describe('Stream video', () => {
         context('Valid requests', () => {
             it('Should return the whole video file (for downloading)', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .expect('Content-Type', 'video/mp4')
                     .expect('Content-Length', videoFileSize.toString())
@@ -41,7 +52,7 @@ describe('Streamer Module', () => {
 
             it('Should stream first chunk', async () => {
                 await request(server.app)
-                    .get('/api/streamer/video/video.mp4')
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', 'bytes=0-')
@@ -53,7 +64,7 @@ describe('Streamer Module', () => {
 
             it('Should stream middle chunk of video', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', `bytes=${videoFileSize / 2}-${(videoFileSize / 2) + maxChunkSize}`)
@@ -65,7 +76,7 @@ describe('Streamer Module', () => {
 
             it('Should stream last chunk of video', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', `bytes=${videoFileSize - 1 - maxChunkSize}-${videoFileSize - 1}`)
@@ -82,7 +93,7 @@ describe('Streamer Module', () => {
 
                 while (totalChunkSize < videoFileSize) {
                     await request(server.app)
-                        .get(`${apiEndpoint}/video.mp4`)
+                        .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                         .set({ authorization: authorizationHeader })
                         .set('Accept', '*/*')
                         .set('Range', `bytes=${totalChunkSize + nextByte}-`)
@@ -98,7 +109,7 @@ describe('Streamer Module', () => {
 
             it('Should stream specific chunk size (<maxChunkSize)', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', 'bytes=500-724')
@@ -110,7 +121,7 @@ describe('Streamer Module', () => {
 
             it('Should stream max chunk size (when chunksize>maxChunkSize)', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', `bytes=100-${maxChunkSize * 2}`)
@@ -124,7 +135,7 @@ describe('Streamer Module', () => {
         context('Bad requests', () => {
             it('Should not stream chunk of video from negative range', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', 'bytes=-100000-200000')
@@ -133,7 +144,7 @@ describe('Streamer Module', () => {
 
             it('Should not stream chunk of video end before start', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', 'bytes=20000-10000')
@@ -142,7 +153,7 @@ describe('Streamer Module', () => {
 
             it('Should not stream chunk of video end equals start', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', 'bytes=100000-100000')
@@ -151,7 +162,7 @@ describe('Streamer Module', () => {
 
             it('Should not stream chunk of video end after max video size', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/video.mp4`)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
                     .set({ authorization: authorizationHeader })
                     .set('Accept', '*/*')
                     .set('Range', `bytes=${videoFileSize - 200}-${videoFileSize + 200}`)
@@ -160,7 +171,7 @@ describe('Streamer Module', () => {
 
             it('Should not stream a non video file', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/text.txt`)
+                    .get(`${apiVideoEndpoint}/${testTextFilename}`)
                     .set({ authorization: authorizationHeader })
                     .expect(400);
             });
@@ -169,7 +180,79 @@ describe('Streamer Module', () => {
         context('Not found video', () => {
             it('Should not stream not found video file', async () => {
                 await request(server.app)
-                    .get(`${apiEndpoint}/no-video.mp4`)
+                    .get(`${apiVideoEndpoint}/no-video.mp4`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(404);
+            });
+        });
+    });
+
+    describe('Get thumbnail', () => {
+        context('Valid requests', () => {
+            it('Should return found thumbnail', async () => {
+                await request(server.app)
+                    .get(`${apiThumbnailEndpoint}/${testThumbnailFilename}`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(200);
+            });
+        });
+
+        context('Bad requests', () => {
+            it('Should not return thumbnail without suffix', async () => {
+                await request(server.app)
+                    .get(`${apiThumbnailEndpoint}/thumbnail`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(400);
+            });
+
+            it('Should not return thumbnail with invalid suffix', async () => {
+                await request(server.app)
+                    .get(`${apiThumbnailEndpoint}/thumbnail.mp4`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(400);
+            });
+        });
+
+        context('Not found thumbnail', async () => {
+            it('Should not return non found thumbnail file', async () => {
+                await request(server.app)
+                    .get(`${apiThumbnailEndpoint}/no-thumbnail.png`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(404);
+            });
+        });
+    });
+
+    describe('Get preview', () => {
+        context('Valid requests', () => {
+            it('Should return found preview', async () => {
+                await request(server.app)
+                    .get(`${apiPreviewEndpoint}/${testPreviewFilename}`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(200);
+            });
+        });
+
+        context('Bad requests', () => {
+            it('Should not return preview without suffix', async () => {
+                await request(server.app)
+                    .get(`${apiPreviewEndpoint}/preview`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(400);
+            });
+
+            it('Should not return preview with invalid suffix', async () => {
+                await request(server.app)
+                    .get(`${apiPreviewEndpoint}/preview.png`)
+                    .set({ authorization: authorizationHeader })
+                    .expect(400);
+            });
+        });
+
+        context('Not found preview', () => {
+            it('Should not return non found preview file', async () => {
+                await request(server.app)
+                    .get(`${apiPreviewEndpoint}/no-preview.gif`)
                     .set({ authorization: authorizationHeader })
                     .expect(404);
             });
