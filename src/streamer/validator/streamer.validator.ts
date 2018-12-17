@@ -7,8 +7,7 @@ export class StreamerValidator {
     static canStreamVideo(req: Request, res: Response, next: NextFunction) {
         next(
             StreamerValidator.validatePath(req.params.path, config.sourceType.video) ||
-            StreamerValidator.validateRangeHeader(req.headers.range as string)
-        );
+            StreamerValidator.validateRangeHeader(req.headers.range as string));
     }
 
     static canStreamThumbnail(req: Request, res: Response, next: NextFunction) {
