@@ -177,6 +177,14 @@ describe('Streamer Module', () => {
             });
         });
 
+        context('Unauthorized user', () => {
+            it('Should not stream video when user is unauthorized', async () => {
+                await request(server.app)
+                    .get(`${apiVideoEndpoint}/${testVideoFilename}`)
+                    .expect(401);
+            });
+        });
+
         context('Not found video', () => {
             it('Should not stream not found video file', async () => {
                 await request(server.app)
@@ -213,6 +221,14 @@ describe('Streamer Module', () => {
             });
         });
 
+        context('Unauthorized user', () => {
+            it('Should not return thumbnail when user is unauthorized', async () => {
+                await request(server.app)
+                    .get(`${apiThumbnailEndpoint}/${testThumbnailFilename}`)
+                    .expect(401);
+            });
+        });
+
         context('Not found thumbnail', async () => {
             it('Should not return non found thumbnail file', async () => {
                 await request(server.app)
@@ -246,6 +262,14 @@ describe('Streamer Module', () => {
                     .get(`${apiPreviewEndpoint}/preview.png`)
                     .set({ authorization: authorizationHeader })
                     .expect(400);
+            });
+        });
+
+        context('Unauthorized user', () => {
+            it('Should not return preview when user is unauthorized', async () => {
+                await request(server.app)
+                    .get(`${apiPreviewEndpoint}/${testPreviewFilename}`)
+                    .expect(401);
             });
         });
 
