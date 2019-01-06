@@ -31,6 +31,11 @@ export const config = {
         endpoint: process.env.S3_ENDPOINT || '',
     },
     streamer: {
-        maxChunkSize: +(process.env.MAX_CHUNK_SIZE_MB || 1) * 1024 * 1024 // 1Mb
-    }
+        maxChunkSize: +(process.env.MAX_CHUNK_SIZE_MB || 1) * 1024 * 1024, // 1Mb
+    },
+    sourceType: {
+        video: /.*\.mp4$/i,
+        thumbnail: /.*\.png$/i,
+        preview: /.*\.gif$/i,
+    },
 };

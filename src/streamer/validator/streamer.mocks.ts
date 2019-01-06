@@ -18,4 +18,26 @@ export class ValidRequestMocks {
             path: 'test.mp4',
         },
     });
+
+    canStreamThumbnail = createRequest({
+        method: 'GET',
+        url: '/api/streamer/thumbnail/:path',
+        headers: {
+            authorization: this.authorizationHeader,
+        },
+        params: {
+            path: 'test.png',
+        },
+    });
+
+    canStreamPreview = createRequest({
+        method: 'GET',
+        url: '/api/streamer/preview/:path',
+        headers: {
+            authorization: this.authorizationHeader,
+        },
+        params: {
+            path: 'test.gif',
+        },
+    });
 }
