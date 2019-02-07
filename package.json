@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test mocha --recursive -r ts-node/register src/**/*.spec.ts --exit",
+    "test": "cross-env NODE_ENV=test mocha --timeout 10000 --recursive -r ts-node/register src/**/*.spec.ts --exit",
     "test:validation": "cross-env NODE_ENV=test mocha --recursive -r ts-node/register \"src/**/*.validator.spec.ts\" --exit",
     "test:integration": "cross-env NODE_ENV=test mocha --timeout 40000 --recursive -r ts-node/register \"src/utils/s3.ts\" \"src/**/*.router.spec.ts\" --exit",
     "test:repository": "cross-env NODE_ENV=test mocha --recursive -r ts-node/register \"src/**/*.repository.spec.ts\" --exit",
@@ -13,7 +13,7 @@
     "coverage-test": "cross-env NODE_ENV=test nyc check-coverage --lines 95 --functions 95 --branches 95",
     "tslint": "tslint -c tslint.json -p tsconfig.json"
   },
-  "author": "Ron Borysovski, Almog Vagman, Saar Mornel & Yonatan Tal",
+  "author": "Yuval Assa",
   "license": "ISC",
   "devDependencies": {
     "@types/amqplib": "^0.5.9",
