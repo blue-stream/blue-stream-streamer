@@ -16,7 +16,7 @@ export const config = {
         name: 'streamer',
     },
     authentication: {
-        required: +(process.env.AUTHENTICATION_REQUIRED || 1),
+        required: +(process.env.AUTHENTICATION_REQUIRED || 0),
         secret: process.env.SECRET_KEY || 'bLue5tream@2018', // Don't use static value in production! remove from source control!
     },
     cors: {
