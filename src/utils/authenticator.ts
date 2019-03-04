@@ -15,7 +15,6 @@ export class Authenticator {
 
     public static initialize(verifyCallback?: passportJwt.VerifiedCallback) {
         const strategy = new passportJwt.Strategy(Authenticator.jwtOptions, function (jwtPayload, next: passportJwt.VerifiedCallback) {
-            console.log(jwtPayload);
             if (verifyCallback) {
                 verifyCallback(jwtPayload, next);
             } else {
