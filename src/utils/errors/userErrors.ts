@@ -17,3 +17,9 @@ export class ResourceNotFoundError extends UserError {
         super(message || 'Resource not found', 404);
     }
 }
+
+export class UnauthorizedResourceError extends UserError {
+    constructor() {
+        super('User is not authorized to view this resource', 403);
+    }
+}
