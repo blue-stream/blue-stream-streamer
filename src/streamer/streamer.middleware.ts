@@ -9,12 +9,12 @@ export function hasRequiredToken(req: Request, res: Response, next: NextFunction
     if (!videoToken) throw new UnauthorizedResourceError();
 
     const path = req.params.path;
-    const decodedToken = verify(videoToken, config.videoToken.secret) as { userId: string, path: string };
+    const decodedToken = verify(videoToken, config.videoToken.secret) as { user: string, path: string };
 
     if (
         !decodedToken ||
         decodedToken.path !== path ||
-        decodedToken.userId !== req.user.id
+        decodedToken.user !== req.user.id
     ) throw new UnauthorizedResourceError();
 
     return next();

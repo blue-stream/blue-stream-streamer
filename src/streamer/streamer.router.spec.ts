@@ -20,7 +20,7 @@ describe('Streamer Module', () => {
     let server: Server;
     let videoFileSize: number;
     const authCookie = `${config.authentication.cookieName}=${sign({ id: 'user@domain' }, config.authentication.secret)}`;
-    const videoToken = sign({ userId: 'user@domain', path: testVideoFilename }, config.videoToken.secret);
+    const videoToken = sign({ user: 'user@domain', path: testVideoFilename }, config.videoToken.secret);
 
     before(async () => {
         await uploadFile(`${testFilesPath}/${testVideoFilename}`, testVideoFilename, 'video/mp4');
@@ -182,7 +182,7 @@ describe('Streamer Module', () => {
             });
 
             it('Should not stream a non video file', async () => {
-                const token = sign({ userId: 'user@domain', path: testTextFilename }, config.videoToken.secret);
+                const token = sign({ user: 'user@domain', path: testTextFilename }, config.videoToken.secret);
                 await request(server.app)
                     .get(`${apiVideoEndpoint}/${testTextFilename}`)
                     .set('Cookie', authCookie)
@@ -193,7 +193,7 @@ describe('Streamer Module', () => {
 
         context('Not found video', () => {
             it('Should not stream not found video file', async () => {
-                const token = sign({ userId: 'user@domain', path: 'no-video.mp4' }, config.videoToken.secret);
+                const token = sign({ user: 'user@domain', path: 'no-video.mp4' }, config.videoToken.secret);
                 await request(server.app)
                     .get(`${apiVideoEndpoint}/no-video.mp4`)
                     .set('Cookie', authCookie)
