@@ -16,7 +16,8 @@ export const config = {
         name: 'streamer',
     },
     authentication: {
-        required: +(process.env.AUTHENTICATION_REQUIRED || 0),
+        cookieName: process.env.AUTHENTICATION_COOKIE_NAME || 'bs-token',
+        required: +(process.env.AUTHENTICATION_REQUIRED || 1),
         secret: process.env.SECRET_KEY || 'bLue5tream@2018', // Don't use static value in production! remove from source control!
     },
     cors: {
@@ -37,5 +38,9 @@ export const config = {
         video: /.*\.mp4$/i,
         thumbnail: /.*\.png$/i,
         preview: /.*\.gif$/i,
+    },
+    videoToken: {
+        tokenName: process.env.VIDEO_TOKEN_NAME || 'video-token',
+        secret: process.env.VIDEO_TOKEN_SECRET || 'video@bs2019!',
     },
 };

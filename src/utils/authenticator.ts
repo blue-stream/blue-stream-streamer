@@ -3,9 +3,13 @@ import * as passportJwt from 'passport-jwt';
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../config';
 
+const cookieExtractor = function (req: Request) {
+    return (req && req.cookies) ? req.cookies[config.authentication.cookieName] : null;
+};
+
 export class Authenticator {
     private static readonly jwtOptions: passportJwt.StrategyOptions = {
-        jwtFromRequest: passportJwt.ExtractJwt.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest: cookieExtractor,
         secretOrKey: config.authentication.secret,
     };
 

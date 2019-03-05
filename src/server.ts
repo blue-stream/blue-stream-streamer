@@ -1,12 +1,13 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import { config } from './config';
 import { AppRouter } from './router';
 
-import { userErrorHandler, serverErrorHandler, unknownErrorHandler } from './utils/errors/errorHandler';
+import { userErrorHandler, serverErrorHandler, unknownErrorHandler, tokenErrorHandler } from './utils/errors/errorHandler';
 
 import { Authenticator } from './utils/authenticator';
 export class Server {
@@ -52,6 +53,7 @@ export class Server {
             this.app.use(morgan('dev'));
         }
 
+        this.app.use(cookieParser());
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -62,6 +64,7 @@ export class Server {
     }
 
     private initializeErrorHandler() {
+        this.app.use(tokenErrorHandler);
         this.app.use(userErrorHandler);
         this.app.use(serverErrorHandler);
         this.app.use(unknownErrorHandler);
