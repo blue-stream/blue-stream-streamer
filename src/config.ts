@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 export const config = {
     logger: {
         durable: false,
