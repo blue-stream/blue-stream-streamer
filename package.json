@@ -4,7 +4,9 @@
   "description": "Blue Stream micro-service template for future services",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node ./dist/index.js",
+    "build": "tsc",
+    "dev": "ts-node ./src/index.ts",
+    "start": "node ./dist/index.js",
     "test": "cross-env NODE_ENV=test mocha --timeout 10000 --recursive -r ts-node/register \"src/**/*.spec.ts\" --exit",
     "test:validation": "cross-env NODE_ENV=test mocha --recursive -r ts-node/register \"src/**/*.validator.spec.ts\" --exit",
     "test:integration": "cross-env NODE_ENV=test mocha --timeout 40000 --recursive -r ts-node/register \"src/utils/s3.ts\" \"src/**/*.router.spec.ts\" --exit",
