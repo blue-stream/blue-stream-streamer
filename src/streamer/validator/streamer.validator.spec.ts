@@ -21,8 +21,8 @@ describe('Streamer Validator Middleware', function () {
         it('Should return PathInvalidError when video path doesn\'t have mp4 extension', function () {
             expect(StreamerValidator.validatePath('video.avi', config.sourceType.video)).to.be.instanceOf(PathInvalidError);
         });
-        it('Should return PathInvalidError when thumbnail path doesn\'t have png extension', function () {
-            expect(StreamerValidator.validatePath('thumbnail.jpg', config.sourceType.thumbnail)).to.be.instanceOf(PathInvalidError);
+        it('Should return PathInvalidError when thumbnail path doesn\'t have png/jpg/jpeg/bmp extension', function () {
+            expect(StreamerValidator.validatePath('thumbnail.pn', config.sourceType.thumbnail)).to.be.instanceOf(PathInvalidError);
         });
         it('Should return PathInvalidError when preview path doesn\'t have gif extension', function () {
             expect(StreamerValidator.validatePath('preview.APNG', config.sourceType.preview)).to.be.instanceOf(PathInvalidError);
