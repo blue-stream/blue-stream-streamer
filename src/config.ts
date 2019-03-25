@@ -6,12 +6,16 @@ export const config = {
     },
     server: {
         port: 3000,
-        name: 'streamer',
+        name: 'blue-stream-streamer',
     },
     authentication: {
         cookieName: process.env.AUTHENTICATION_COOKIE_NAME || 'bs-token',
         required: +(process.env.AUTHENTICATION_REQUIRED || 1),
         secret: process.env.SECRET_KEY || 'bLue5tream@2018', // Don't use static value in production! remove from source control!
+    },
+    apm: {
+        server: process.env.APM_SERVER || 'http://apm:8200',
+        isActive: process.env.APM_ACTIVE || true,
     },
     cors: {
         allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:4200'],

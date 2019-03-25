@@ -1,6 +1,16 @@
+import { config } from './config';
+const apm = require('elastic-apm-node');
+
+if (config.apm.isActive) {
+    apm.start({
+        serviceName: config.server.name,
+        serverUrl: config.apm.server,
+        captureBody: 'all',
+    });
+}
+
 import { Server } from './server';
 import { log } from './utils/logger';
-import { config } from './config';
 
 process.on('uncaughtException', (err) => {
     console.error('Unhandled Exception', err.stack);
