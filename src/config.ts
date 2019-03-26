@@ -33,8 +33,8 @@ export const config = {
     },
     sourceType: {
         video: /.*\.mp4$/i,
-        thumbnail: /.*\.png$/i,
-        preview: /.*\.gif$/i,
+        thumbnail: /.*\.(gif|png|jpg|jpeg|bmp)$/i,
+        preview: /.*\.(gif|png|jpg|jpeg|bmp)$/i,
     },
     videoToken: {
         tokenName: process.env.VIDEO_TOKEN_NAME || 'video-token',

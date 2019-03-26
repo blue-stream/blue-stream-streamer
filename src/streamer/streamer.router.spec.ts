@@ -265,7 +265,7 @@ describe('Streamer Module', () => {
 
             it('Should not return preview with invalid suffix', async () => {
                 await request(server.app)
-                    .get(`${apiPreviewEndpoint}/preview.png`)
+                    .get(`${apiPreviewEndpoint}/preview.gf`)
                     .set('Cookie', authCookie)
                     .query(`${config.videoToken.tokenName}=${videoToken}`)
                     .expect(400);
