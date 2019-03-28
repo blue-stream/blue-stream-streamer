@@ -15,7 +15,7 @@ export const config = {
     },
     apm: {
         server: process.env.APM_SERVER || 'http://apm:8200',
-        isActive: process.env.APM_ACTIVE || true,
+        isActive: +(process.env.APM_ACTIVE || 1),
     },
     cors: {
         allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:4200'],
